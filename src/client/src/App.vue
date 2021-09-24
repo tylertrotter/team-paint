@@ -1,18 +1,20 @@
 <template>
-  <big-grid />
+  <context-grid player="red" />
 </template>
 
 <script>
-import bigGrid from './components/bigGrid.vue';
+import contextGrid from './components/contextGrid.vue';
 
 export default {
   name: 'App',
   components: {
-    bigGrid
+    contextGrid
   }
 }
 </script>
 
 <style>
-
+  body {
+    margin: 0;
+  }
 </style>
