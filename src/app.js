@@ -67,4 +67,7 @@ app.use(errorConverter);
 // handle error
 app.use(errorHandler);
 
+app.set('views', './src/views')
+app.set('view engine', 'pug');
+
 module.exports = app;

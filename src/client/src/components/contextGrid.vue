@@ -47,7 +47,7 @@
     },
     computed: {
       getPlayer() {
-        return this.$store.state.game.players[this.player];
+        return this.$store.state.players[this.player];
       },
       contextGrid() {
         const wholeGrid = this.$store.state.grid;

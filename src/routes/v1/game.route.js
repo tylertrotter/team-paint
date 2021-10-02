@@ -1,21 +1,25 @@
 const express = require('express');
-const siteController = require('../../controllers/site.controller');
+const auth = require('../../middlewares/auth');
+// const validate = require('../../middlewares/validate');
+// const userValidation = require('../../validations/user.validation');
+const gameController = require('../../controllers/game.controller');
+const authController = require('../../controllers/auth.controller');
 
 const router = express.Router();
 
-router.route('/').get(siteController.getHome);
-
-router.route('/signup').get((req, res) => {
-  res.render('signup');
+router.route('/').post(async (req, res) => {
+  const body = await authController.login(req, res);
+  if (body.user.role === 'user') gameController.getGamesForUser(req, res, body.user);
+  else console.log('there was no user??!?!');
 });
 
-router.route('/login').get((req, res) => {
-  res.render('login');
-});
+router.route('/:gameId').get(gameController.getGame);
 
-router.route('/user').get((req, res) => {
-  res.render('user', { user: req });
-});
+// router
+// .route('/:gameId')
+// .get(auth('getUsers'), validate(userValidation.getUser), userController.getUser)
+// .patch(auth('manageUsers'), gameController.updateGame);
+// .delete(auth('manageUsers'), validate(userValidation.deleteUser), userController.deleteUser);
 
 module.exports = router;
 
