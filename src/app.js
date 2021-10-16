@@ -22,10 +22,10 @@ if (config.env !== 'test') {
   app.use(morgan.errorHandler);
 }
 
-app.use(express.static(path.join(__dirname, 'client/dist')));
-
 // set security HTTP headers
-app.use(helmet());
+// app.use(helmet());
+
+
 
 // parse json request body
 app.use(express.json());
@@ -53,13 +53,19 @@ if (config.env === 'production') {
   app.use('/auth', authLimiter);
 }
 
+app.use('/game', express.static(path.join(__dirname, 'client/dist')));
+app.use('/js', express.static(path.join(__dirname, 'client/dist/js')));
+app.use('/css', express.static(path.join(__dirname, 'client/dist/css')));
 // v1 api routes
 app.use('/', routes);
+
 
 // send back a 404 error for any unknown api request
 app.use((req, res, next) => {
   next(new ApiError(httpStatus.NOT_FOUND, 'Not found'));
 });
+
+
 
 // convert error to ApiError, if needed
 app.use(errorConverter);

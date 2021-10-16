@@ -52,16 +52,12 @@ const getGameById = async (id) => {
  * @param {Object} updateBody
  * @returns {Promise<User>}
  */
-const updateGameById = async (gameId, updateBody) => {
+const updateGridSquare = async (gameId, x, y, color) => {
   const game = await getGameById(gameId);
   if (!game) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Game not found');
   }
-  // if (updateBody.email && (await User.isEmailTaken(updateBody.email, userId))) {
-  //   throw new ApiError(httpStatus.BAD_REQUEST, 'Email already taken');
-  // }
-  Object.assign(game, updateBody);
-  await game.save();
+  await game.updateOne({ $set: { [`grid.${y}.${x}`]: color } });
   return game;
 };
 
@@ -80,10 +76,6 @@ const updateGameById = async (gameId, updateBody) => {
 // };
 
 module.exports = {
-  // createUser,
-  // queryUsers,
   getGameById,
-  // getUserByEmail,
-  updateGameById,
-  // deleteUserById,
+  updateGridSquare,
 };

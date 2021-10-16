@@ -6,7 +6,6 @@ const { toJSON, paginate } = require('./plugins');
 const gameSchema = mongoose.Schema({
   players: {
     red: {
-      id: String,
       name: String,
       position: {
         x: Number,

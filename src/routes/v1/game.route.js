@@ -7,13 +7,15 @@ const authController = require('../../controllers/auth.controller');
 
 const router = express.Router();
 
-router.route('/').post(async (req, res) => {
-  const body = await authController.login(req, res);
-  if (body.user.role === 'user') gameController.getGamesForUser(req, res, body.user);
-  else console.log('there was no user??!?!');
+router.route('/list').post(async (req, res) => {
+  await authController.login(req, res);
+  // if (body.user.role === 'user') gameController.getGamesForUser(req, res, body.user);
+  // else console.log('there was no user??!?!');
 });
 
-router.route('/:gameId').get(gameController.getGame);
+router.route('/paint').post(async (req, res) => gameController.paint(req, res));
+
+router.route('/:gameId').get(auth(), gameController.getGame);
 
 // router
 // .route('/:gameId')

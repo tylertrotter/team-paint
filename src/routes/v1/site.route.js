@@ -3,7 +3,9 @@ const siteController = require('../../controllers/site.controller');
 
 const router = express.Router();
 
-router.route('/').get(siteController.getHome);
+router.route('/').get((req, res) => {
+  res.render('home');
+});
 
 router.route('/signup').get((req, res) => {
   res.render('signup');

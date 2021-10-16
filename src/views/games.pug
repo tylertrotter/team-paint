@@ -1,4 +1,11 @@
+a(href="/auth/logout") logout
+
 ul
-  each game in games
+  each game in user.games
     li
-      a(href="game/" + game) #{game}
+      a(href="/game#" + game) #{game}
+
+script.
+  localStorage.setItem('accessToken', '!{tokens.access.token}');
+  localStorage.setItem('refreshToken', '!{tokens.refresh.token}');
+  localStorage.setItem('user', '!{user.id}');

@@ -22,7 +22,7 @@ const defaultRoutes = [
     route: userRoute,
   },
   {
-    path: '/game',
+    path: '/g',
     route: gameRoute,
   },
 ];

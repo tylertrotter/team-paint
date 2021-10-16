@@ -17,20 +17,33 @@ const getGame = async (req, res) => {
   if (!game) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Game not found');
   }
+
   res.send(game);
 };
 
 const getGamesForUser = async (req, res, user) => {
+  // req.headers.authorization = Bearer {{auth_token}};
+
   if (!user.games) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Game list not found');
   }
   res.render('games', user);
 };
 
-const updateGame = catchAsync(async (req, res) => {
-  const user = await gameService.updateGameById(req.params.userId, req.body);
-  res.send(user);
-});
+const paint = async (req, res) => {
+  // gameId, x, y, color
+  const { id, x, y, color } = req.body;
+  // console.log(req);
+  // console.log(gameId, x, y, color);
+  await gameService.updateGridSquare(id, x, y, color);
+  // console.log(req.body)
+  res.send();
+};
+
+// const updateGame = catchAsync(async (req, res) => {
+//   const user = await gameService.updateGameById(req.params.userId, req.body);
+//   res.send(user);
+// });
 
 // const login = catchAsync(async (req, res) => {
 //   const { email, password } = req.body;
@@ -42,5 +55,5 @@ const updateGame = catchAsync(async (req, res) => {
 module.exports = {
   getGame,
   getGamesForUser,
-  updateGame,
+  paint,
 };

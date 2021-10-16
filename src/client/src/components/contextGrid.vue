@@ -1,7 +1,8 @@
 <template>
-<div class="context-grid">
+<div v-if="!player">Loading...</div>
+<div v-else class="context-grid">
   <div class="context-grid__container" :data-move="move">
-    <div class="player" />
+    <div class="player" :class="'player--' + player" />
     <div v-for="(row, y) in contextGrid" :key="y" class="context-grid__y">
       <div 
         v-for="(color, x) in row" 
@@ -18,6 +19,7 @@
 
 <script>
   import { mapMutations } from 'vuex';
+  import axios from 'axios';
   // const GRID_WIDTH = 300;
   // const GRID_HEIGHT = 300;
   const CONTEXT_GRID_SIZE = 11;
@@ -27,6 +29,10 @@
     name: 'contextGrid',
     props: {
       player: {
+        default: 'yellow',
+        type: String
+      },
+      gameId: {
         default: null,
         type: String
       }
@@ -85,11 +91,14 @@
         'movePlayer'
       ]),
       handleClick() {
-        this.paint({
+        const payload = {
+          id: this.gameId,
           x: this.getPlayer.position.x,
           y: this.getPlayer.position.y,
           color: this.player
-        });
+        }
+        this.paint(payload);
+        axios.post(this.$hostname + 'g/paint', payload);
       },
       handleKeyUp(e) {
         if (this.move)
@@ -242,12 +251,23 @@
     padding-bottom: var(--grid-square-width);
     border-radius: 50%;
     /* transform: scale(1.1); */
-    border: 5px solid red;
+    border: 5px solid transparent;
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
     z-index: 1;
     box-shadow: inset 0 0 0 2px white, 0 0 0 2px white;
+  }
 
+  .player--red {
+    border-color: red;
+  }
+
+  .player--blue {
+    border-color: blue;
+  }
+
+  .player--yellow {
+    border-color: yellow;
   }
 </style>

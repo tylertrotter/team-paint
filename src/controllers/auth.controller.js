@@ -1,4 +1,5 @@
 const httpStatus = require('http-status');
+const ApiError = require('../utils/ApiError');
 const catchAsync = require('../utils/catchAsync');
 const { authService, userService, tokenService, emailService } = require('../services');
 
@@ -12,7 +13,11 @@ const login = async (req, res) => {
   const { email, password } = req.body;
   const user = await authService.loginUserWithEmailAndPassword(email, password);
   const tokens = await tokenService.generateAuthTokens(user);
-  return { req, res, user, tokens };
+  // res.send(tokens)
+  if (!user.games) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Game list not found');
+  }
+  res.render('games', { user, tokens });
 };
 
 const logout = catchAsync(async (req, res) => {
