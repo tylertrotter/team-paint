@@ -24,6 +24,12 @@
   // const GRID_HEIGHT = 300;
   const CONTEXT_GRID_SIZE = 11;
   const CONTEXT_GRID_BUFFER = 2;
+  const PRIMARY_COLORS = {
+    red: 'hsl(0 90% 50%)',
+    blue: 'hsl(222 90% 50%)',
+    yellow: 'hsl(60 90% 50%)'
+  }
+  const HEADERS = { 'Authorization': 'Bearer ' + localStorage.getItem('accessToken') };
 
   export default {
     name: 'contextGrid',
@@ -90,15 +96,20 @@
         'paint',
         'movePlayer'
       ]),
-      handleClick() {
+      handlePaint() {
         const payload = {
           id: this.gameId,
           x: this.getPlayer.position.x,
           y: this.getPlayer.position.y,
-          color: this.player
+          color: this.getColor(PRIMARY_COLORS[this.player])
         }
         this.paint(payload);
-        axios.post(this.$hostname + 'g/paint', payload);
+        axios({ 
+          url: this.$hostname + 'g/paint', 
+          method: 'post',
+          headers: HEADERS,
+          data: payload
+        });
       },
       handleKeyUp(e) {
         if (this.move)
@@ -113,25 +124,61 @@
         else if (e.code === 'ArrowDown')
           this.moveGrid('up');
         else if (e.code === 'Space')
-          this.handleClick();
+          this.handlePaint();
       },
       moveGrid(direction) {
         this.move = direction;
-          const moveX = direction === 'left' ? 1 : direction === 'right' ? -1 : 0;
-          const moveY = direction === 'up' ? 1 : direction === 'down' ? -1 : 0;
+        const moveX = direction === 'left' ? 1 : direction === 'right' ? -1 : 0;
+        const moveY = direction === 'up' ? 1 : direction === 'down' ? -1 : 0;
+        const position = {
+          x: this.getPlayer.position.x + moveX,
+          y: this.getPlayer.position.y + moveY
+        };
+
+        axios({ 
+          url: this.$hostname + 'g/update-player/'+this.player, 
+          method: 'post',
+          headers: HEADERS,
+          data: {
+            id: this.gameId,
+            position
+          }
+        });
           
         this.timer = setTimeout(()=> {
           this.movePlayer({
               player: this.player,
-              position: {
-                x: this.getPlayer.position.x + moveX,
-                y: this.getPlayer.position.y + moveY
-              }
+              position
             });
           
           // actually move grid
           this.move = null;
         }, 400)
+      },
+      getColor(paintedColor) {
+        const grid = this.$store.state.grid;
+
+        const currentColor = grid[this.getPlayer.position.y][this.getPlayer.position.x];
+        const current = currentColor === '#fff' ? null : this.getHSL(currentColor);
+        const painted = this.getHSL(paintedColor);
+        return `hsl(${current ? this.getH(current.H, painted.H) : painted.H} 90% ${current ? this.getL(current.L, painted.L) : '90%'})`;
+      },
+      getHSL(hslString) {
+        const hslParts = hslString.replace('hsl(', '').replace(')', '').replace(',', '').replace(/%/g, '').split(' ');
+        return {
+          H: +hslParts[0],
+          S: +hslParts[1],
+          L: +hslParts[2]
+        }
+      },
+      getH (currentH, paintedH) {
+        if (currentH !== 0 && !currentH)
+          return paintedH;
+        const wrapAroundWheel = Math.abs(currentH - paintedH) > 180 ? 180 : 0;
+        return (currentH + paintedH) / 2 + wrapAroundWheel;
+      },
+      getL (currentL) {
+        return Math.max(currentL - 10, 50) + '%';
       }
     }
   }

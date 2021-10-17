@@ -13,7 +13,8 @@ router.route('/list').post(async (req, res) => {
   // else console.log('there was no user??!?!');
 });
 
-router.route('/paint').post(async (req, res) => gameController.paint(req, res));
+router.route('/paint').post(auth(), async (req, res) => gameController.paint(req, res));
+router.route('/update-player/:player').post(auth(), async (req, res) => gameController.updatePlayer(req, res));
 
 router.route('/:gameId').get(auth(), gameController.getGame);
 

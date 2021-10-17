@@ -31,29 +31,20 @@ const getGamesForUser = async (req, res, user) => {
 };
 
 const paint = async (req, res) => {
-  // gameId, x, y, color
   const { id, x, y, color } = req.body;
-  // console.log(req);
-  // console.log(gameId, x, y, color);
   await gameService.updateGridSquare(id, x, y, color);
-  // console.log(req.body)
   res.send();
 };
 
-// const updateGame = catchAsync(async (req, res) => {
-//   const user = await gameService.updateGameById(req.params.userId, req.body);
-//   res.send(user);
-// });
-
-// const login = catchAsync(async (req, res) => {
-//   const { email, password } = req.body;
-//   const user = await authService.loginUserWithEmailAndPassword(email, password);
-//   const tokens = await tokenService.generateAuthTokens(user);
-//   res.render('game', { user, tokens });
-// });
+const updatePlayer = async (req, res) => {
+  const { id, position } = req.body;
+  await gameService.updatePlayer(id, req.params.player, position);
+  res.send();
+};
 
 module.exports = {
   getGame,
   getGamesForUser,
   paint,
+  updatePlayer,
 };

@@ -61,6 +61,15 @@ const updateGridSquare = async (gameId, x, y, color) => {
   return game;
 };
 
+const updatePlayer = async (gameId, player, position) => {
+  const game = await getGameById(gameId);
+  if (!game) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Game not found');
+  }
+  await game.updateOne({ $set: { [`players.${player}.position`]: position } });
+  return game;
+};
+
 // /**
 //  * Delete user by id
 //  * @param {ObjectId} userId
@@ -78,4 +87,5 @@ const updateGridSquare = async (gameId, x, y, color) => {
 module.exports = {
   getGameById,
   updateGridSquare,
+  updatePlayer,
 };
