@@ -23,6 +23,9 @@ export const store = createStore({
     },
     movePlayer(state, p) {
       state.players[p.player].position = p.position;
+    },
+    incrementActions(state, p) {
+      state.players[p.player].movesUsed = state.players[p.player].movesUsed + 1;
     }
   }
 })

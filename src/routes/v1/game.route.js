@@ -15,8 +15,11 @@ router.route('/list').post(async (req, res) => {
 
 router.route('/paint').post(auth(), async (req, res) => gameController.paint(req, res));
 router.route('/update-player/:player').post(auth(), async (req, res) => gameController.updatePlayer(req, res));
-
+router.route('/increment-actions/:player').post(auth(), async (req, res) => gameController.updatePlayer(req, res));
 router.route('/:gameId').get(auth(), gameController.getGame);
+
+// Run this when player logs in
+// router.route('/grant-actions/:gameId/').post(auth(), gameController.grantActions);
 
 // router
 // .route('/:gameId')

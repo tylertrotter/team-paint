@@ -42,9 +42,24 @@ const updatePlayer = async (req, res) => {
   res.send();
 };
 
+const incrementPlayerActions = async (req, res) => {
+  const { id } = req.body;
+  await gameService.incrementPlayerActions(id, req.params.player);
+  res.send();
+};
+
+const grantActions = async (req, res) => {
+  // get startTime with req.params.gameId
+
+  //gameService.grantActions(startTime)
+  res.send();
+};
+
 module.exports = {
   getGame,
   getGamesForUser,
   paint,
   updatePlayer,
+  incrementPlayerActions,
+  grantActions
 };

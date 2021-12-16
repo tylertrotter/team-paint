@@ -70,6 +70,25 @@ const updatePlayer = async (gameId, player, position) => {
   return game;
 };
 
+const incrementPlayerActions = async (gameId, player) => {
+  const game = await getGameById(gameId);
+  if (!game) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Game not found');
+  }
+  await game.updateOne({ $inc: { [`players.${player}.movesUsed`]: 1 } });
+  return game;
+};
+
+const grantActions = async (startTime) => {
+  // get currentHour
+  // endHour = startTime + 240 hrs
+  // if (currentHour < endHour)
+  //   elapsedHours = currentHour - startTime
+  //   grantedActions = elapsedHours * 100
+
+  // update `movesGranted` with grantedActions;
+};
+
 // /**
 //  * Delete user by id
 //  * @param {ObjectId} userId
@@ -88,4 +107,6 @@ module.exports = {
   getGameById,
   updateGridSquare,
   updatePlayer,
+  incrementPlayerActions,
+  grantActions,
 };

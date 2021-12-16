@@ -20,19 +20,17 @@
 <script>
   import { mapMutations } from 'vuex';
   import axios from 'axios';
-  // const GRID_WIDTH = 300;
-  // const GRID_HEIGHT = 300;
+  import PRIMARY_COLORS from '/src/primaryColors';
+  import getActionsLeft from '/src/mixins/get-actions-left';
+
+
   const CONTEXT_GRID_SIZE = 11;
   const CONTEXT_GRID_BUFFER = 2;
-  const PRIMARY_COLORS = {
-    red: 'hsl(0 90% 50%)',
-    blue: 'hsl(222 90% 50%)',
-    yellow: 'hsl(60 90% 50%)'
-  }
   const HEADERS = { 'Authorization': 'Bearer ' + localStorage.getItem('accessToken') };
 
   export default {
     name: 'contextGrid',
+    mixins: [getActionsLeft],
     props: {
       player: {
         default: 'yellow',
@@ -94,21 +92,37 @@
     methods: {
       ...mapMutations([
         'paint',
-        'movePlayer'
+        'movePlayer',
+        'incrementActions'
       ]),
       handlePaint() {
+        if (this.getActionsLeft <= 0)
+          return;
+
         const payload = {
           id: this.gameId,
           x: this.getPlayer.position.x,
           y: this.getPlayer.position.y,
-          color: this.getColor(PRIMARY_COLORS[this.player])
+          color: this.getColor(PRIMARY_COLORS[this.player]),
+          player: this.player
         }
         this.paint(payload);
+        this.incrementActions({ player: this.player });
+
         axios({ 
           url: this.$hostname + 'g/paint', 
           method: 'post',
           headers: HEADERS,
           data: payload
+        });
+
+        axios({ 
+          url: this.$hostname + 'g/update-player/'+this.player, 
+          method: 'post',
+          headers: HEADERS,
+          data: {
+            id: this.gameId
+          }
         });
       },
       handleKeyUp(e) {
@@ -127,6 +141,9 @@
           this.handlePaint();
       },
       moveGrid(direction) {
+        if (this.getActionsLeft <= 0)
+          return;
+
         this.move = direction;
         const moveX = direction === 'left' ? 1 : direction === 'right' ? -1 : 0;
         const moveY = direction === 'up' ? 1 : direction === 'down' ? -1 : 0;
@@ -144,12 +161,24 @@
             position
           }
         });
+
+        axios({ 
+          url: this.$hostname + 'g/update-player/'+this.player, 
+          method: 'post',
+          headers: HEADERS,
+          data: {
+            id: this.gameId
+          }
+        });
           
+        this.incrementActions({ player: this.player });
+
         this.timer = setTimeout(()=> {
           this.movePlayer({
               player: this.player,
               position
             });
+
           
           // actually move grid
           this.move = null;
@@ -228,7 +257,6 @@
 
   .context-grid {
     overflow: hidden;
-    position: absolute;
     padding-bottom: 100%;
     height: 0;
     width: 100%;
